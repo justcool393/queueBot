@@ -26,7 +26,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             break
         action = log.action
         log_offender = log.target_author
-        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower():
+        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower() or log.mod.name == 'AutoModerator':
             continue
         if action == 'banuser':
             banned = True
@@ -103,4 +103,4 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
 
 if __name__ == "__main__":
     reddit = authorize()
-    print(get_offender_profile_string(reddit, 'BalkanEagles', num_hours=2))
+    print(get_offender_profile_string(reddit, 'BalkanEagles', num_hours=5))
