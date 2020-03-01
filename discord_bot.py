@@ -20,11 +20,6 @@ async def slow_count():
                     print('modqueue length is {}, sending message'.format(modqueue_length))
                     await channel.send('Oh no, there are {} items in the modqueue!'.format(modqueue_length))
 
-    print(slow_count.current_loop)
-
-
-slow_count.start()
-
 
 @client.event
 async def on_ready():
@@ -33,5 +28,5 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+slow_count.start()
 client.run(os.getenv('DISCORD'))
-

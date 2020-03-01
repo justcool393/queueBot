@@ -10,9 +10,11 @@ def authorize():
                          username='barber5')
     return reddit
 
+
 def get_modqueue(reddit):
     print('getting modqueue')
     return reddit.subreddit('coronavirus').mod.modqueue(limit=None)
+
 
 async def get_modqueue_length(reddit=None):
     print('mc time')
@@ -25,8 +27,6 @@ async def get_modqueue_length(reddit=None):
     length = sum(1 for _ in modqueue)
     print('length is {}'.format(length))
     return length
-
-
 
 if __name__ == "__main__":
     print(get_modqueue_length())
