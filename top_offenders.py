@@ -74,7 +74,8 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
             break
         action = log.action
         offender = log.target_author
-        if action not in KEEP_ACTIONS or log.mod.name == 'AutoModerator' or offender == '[deleted]':
+        if action not in KEEP_ACTIONS or log.mod.name == 'AutoModerator' or offender == '[deleted]' \
+                or offender == 'AutoModerator':
             continue
         if action == 'banuser':
             if offender not in banned_idx:
