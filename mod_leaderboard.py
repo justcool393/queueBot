@@ -9,14 +9,26 @@ KEEP_ACTIONS = {'approvecomment', 'removecomment', 'spamcomment', 'banuser', 'ap
 
 
 
-def get_leaderboard(reddit):
+def get_leaderboard(reddit, num_hours=24):
+    current_limit = 100
+    reached, mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard_limit(reddit, num_hours, current_limit)
+    while reached is False:
+        current_limit = current_limit*2
+        reached, mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard_limit(reddit,
+                                                                                                                 num_hours,
+                                                                                                                 current_limit)
+    return mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx
+
+
+def get_leaderboard_limit(reddit, num_hours=24, limit=100):
     mods_actions_idx = {}
-    modset = set([])
     flair_idx = {}
     ban_idx = {}
     remove_idx = {}
     approve_idx = {}
     lock_idx = {}
+    modset = set([])
+    reached = False
     for log in reddit.subreddit('coronavirus').mod.log(limit=5000):
         mod = log.mod
         created = datetime.datetime.fromtimestamp(log.created_utc)
@@ -24,8 +36,9 @@ def get_leaderboard(reddit):
         if action not in KEEP_ACTIONS or mod == 'AutoModerator':
             continue
         modset.add(mod)
-        if datetime.datetime.now() - datetime.timedelta(days=1) > created:
+        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
             print('REACHED 24H')
+            reached = True
             break
         target = log.target_permalink
         if mod not in mods_actions_idx:
@@ -51,7 +64,7 @@ def get_leaderboard(reddit):
             if mod not in remove_idx:
                 remove_idx[mod] = 0
             remove_idx[mod] += 1
-    return mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx
+    return reached, mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx
 
 def print_leaderboard(mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx, top_k=5):
     counter = 0
@@ -80,9 +93,9 @@ def print_leaderboard(mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_i
                                                                                                     removals, locks, bans,
                                                                                                     flairs))
 
-def get_leaderboard_string(reddit, top_k=5):
-    mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard(reddit)
-    lb_string = ''
+def get_leaderboard_string(reddit, num_hours=24, top_k=5):
+    mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard(reddit, num_hours=num_hours)
+    lb_string = 'Mod action leaderboard from past {} hours\n'.format(num_hours)
     counter = 0
     for mod, v in reversed(sorted(mods_actions_idx.items(), key=lambda item: item[1])):
         counter += 1
@@ -117,4 +130,4 @@ def get_leaderboard_string(reddit, top_k=5):
 
 if __name__ == "__main__":
     reddit = authorize()
-    print(get_leaderboard_string(reddit))
+    print(get_leaderboard_string(reddit, num_hours=1.5))

@@ -27,10 +27,14 @@ async def length(ctx):
     await ctx.send('The r/coronavirus modqueue currently has {} items pending.\nhttps://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(length))
 
 @bot.command()
-async def leaderboard(ctx, arg=5):
-    print('leaderboard command with top_k={}'.format(arg))
+async def leaderboard(ctx, num_hours=24, top_k=5):
+    if top_k > 5:
+        top_k = 5
+    if num_hours > 24:
+        num_hours = 24
+    print('leaderboard command with num_hours={} top_k={}'.format(num_hours, top_k))
     await ctx.send('Fetching data, please wait.')
-    lb_string = get_leaderboard_string(reddit)
+    lb_string = get_leaderboard_string(reddit, num_hours=num_hours)
     print(lb_string)
     await ctx.send(lb_string)
 
@@ -52,7 +56,9 @@ async def queue_length():
                 print('length: {}'.format(modqueue_length))
                 if modqueue_length > 50:
                     print('modqueue length is {}, sending message'.format(modqueue_length))
-                    await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
+                    #await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
+
+
 
 queue_length.start()
 
