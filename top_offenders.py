@@ -47,7 +47,7 @@ def get_offender_profile_string(reddit, offender, num_hours=24):
     for offense in offenses:
         counter += 1
         p_string += '\t{}\n'.format(offense)
-        if len(p_string) > 1500:
+        if len(p_string) > 500:
             break
     return p_string
 
