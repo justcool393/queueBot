@@ -55,7 +55,7 @@ async def queue_length():
                 print('length: {}'.format(modqueue_length))
                 if modqueue_length > 50:
                     print('modqueue length is {}, sending message'.format(modqueue_length))
-                    #await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
+                    await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
 
 
 
