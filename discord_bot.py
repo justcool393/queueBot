@@ -29,7 +29,7 @@ async def length(ctx):
 
 @bot.command(help='shows mod action leaderboard from past <hours> hours', usage='<hours>', brief='shows mod action leaderboard')
 @commands.has_role('/r/Coronavirus')
-async def leaderboard(ctx, num_hours=2, top_k=5):
+async def leaderboard(ctx, num_hours=1, top_k=5):
     if top_k > 5:
         top_k = 5
     if num_hours > 24:
@@ -43,7 +43,7 @@ async def leaderboard(ctx, num_hours=2, top_k=5):
 
 @bot.command(help='shows leaderboard of removed user submissions from past <hours> hours', usage='<hours>', brief='shows repeat offender leaderboard')
 @commands.has_role('/r/Coronavirus')
-async def offenders(ctx, num_hours=2, top_k=5):
+async def offenders(ctx, num_hours=1, top_k=5):
     if top_k > 5:
         top_k = 5
     if num_hours > 24:
@@ -57,7 +57,7 @@ async def offenders(ctx, num_hours=2, top_k=5):
 
 @bot.command(help='shows removed submissions from <user> from past <hours> hours', usage='<user> <hours>', brief='shows recent removals for user')
 @commands.has_role('/r/Coronavirus')
-async def recent(ctx, offender='', num_hours=2):
+async def recent(ctx, offender='', num_hours=1):
     if num_hours > 24:
         num_hours = 24
     print('recent command with offender={} num_hours={}'.format(offender, num_hours))

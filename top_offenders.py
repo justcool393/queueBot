@@ -3,13 +3,14 @@ import datetime
 
 
 
-
+ACTIONS_PER_HOUR = 2000
+LOG_MAX = 10000
 KEEP_ACTIONS = {'removecomment', 'spamcomment', 'banuser', 'removelink', 'spamlink'}
 
 def get_offender_profile(reddit, offender, num_hours=24):
-    current_limit = num_hours*100
+    current_limit = ACTIONS_PER_HOUR*num_hours
     reached, offenses, banned = get_offender_profile_limit(reddit, offender, num_hours, current_limit)
-    while reached is False and current_limit < 7000:
+    while reached is False and current_limit < LOG_MAX:
         current_limit = current_limit*2
         reached, offenses, banned = get_offender_profile_limit(reddit, offender, num_hours, current_limit)
     return offenses, banned
@@ -52,9 +53,9 @@ def get_offender_profile_string(reddit, offender, num_hours=24):
 
 
 def get_top_offenders(reddit, num_hours=24):
-    current_limit = 100*num_hours
+    current_limit = ACTIONS_PER_HOUR*num_hours
     reached, offenders_idx, banned_idx = get_top_offenders_limit(reddit, num_hours, current_limit)
-    while reached is False and current_limit < 7000:
+    while reached is False and current_limit < LOG_MAX:
         current_limit = current_limit*2
         reached, offenders_idx, banned_idx = get_top_offenders_limit(reddit, num_hours, current_limit)
     return offenders_idx, banned_idx

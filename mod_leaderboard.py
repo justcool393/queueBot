@@ -7,12 +7,13 @@ import datetime
 KEEP_ACTIONS = {'approvecomment', 'removecomment', 'spamcomment', 'banuser', 'approvelink', 'removelink', 'spamlink',
                 'editflair', 'lock'}
 
-
+ACTIONS_PER_HOUR = 150
+LOG_MAX = 10000
 
 def get_leaderboard(reddit, num_hours=24):
-    current_limit = 100
+    current_limit = ACTIONS_PER_HOUR*num_hours
     reached, mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard_limit(reddit, num_hours, current_limit)
-    while reached is False:
+    while reached is False and current_limit < LOG_MAX:
         current_limit = current_limit*2
         reached, mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard_limit(reddit,
                                                                                                                  num_hours,
