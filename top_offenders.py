@@ -71,7 +71,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
             break
         action = log.action
         offender = log.target_author
-        if action not in KEEP_ACTIONS:
+        if action not in KEEP_ACTIONS  or log.mod.name == 'AutoModerator':
             continue
         if action == 'banuser':
             if offender not in banned_idx:
@@ -103,4 +103,4 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
 
 if __name__ == "__main__":
     reddit = authorize()
-    print(get_offender_profile_string(reddit, 'BalkanEagles', num_hours=5))
+    print(get_offender_profile_string(reddit, 'NafZ1', num_hours=5))
