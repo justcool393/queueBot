@@ -1,10 +1,8 @@
 from reddit_bot import authorize
 import datetime
+from config import ACTIONS_PER_HOUR, LOG_MAX
 
 
-
-ACTIONS_PER_HOUR = 200
-LOG_MAX = 10000
 KEEP_ACTIONS = {'removecomment', 'spamcomment', 'banuser', 'removelink', 'spamlink'}
 
 def get_offender_profile(reddit, offender, num_hours=24):
