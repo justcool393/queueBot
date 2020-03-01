@@ -3,7 +3,7 @@ import datetime
 
 
 
-ACTIONS_PER_HOUR = 2000
+ACTIONS_PER_HOUR = 200
 LOG_MAX = 10000
 KEEP_ACTIONS = {'removecomment', 'spamcomment', 'banuser', 'removelink', 'spamlink'}
 

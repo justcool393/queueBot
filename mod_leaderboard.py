@@ -7,7 +7,7 @@ import datetime
 KEEP_ACTIONS = {'approvecomment', 'removecomment', 'spamcomment', 'banuser', 'approvelink', 'removelink', 'spamlink',
                 'editflair', 'lock'}
 
-ACTIONS_PER_HOUR = 150
+ACTIONS_PER_HOUR = 200
 LOG_MAX = 10000
 
 def get_leaderboard(reddit, num_hours=24):
