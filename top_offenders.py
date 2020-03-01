@@ -6,10 +6,53 @@ import datetime
 
 KEEP_ACTIONS = {'removecomment', 'spamcomment', 'banuser', 'removelink', 'spamlink'}
 
+def get_offender_profile(reddit, offender, num_hours=24):
+    current_limit = num_hours*100
+    reached, offenses, banned = get_offender_profile_limit(reddit, offender, num_hours, current_limit)
+    while reached is False and current_limit < 7000:
+        current_limit = current_limit*2
+        reached, offenses, banned = get_offender_profile_limit(reddit, offender, num_hours, current_limit)
+    return offenses, banned
+
+
+def get_offender_profile_limit(reddit, offender, num_hours, limit):
+    offenses_idx = set([])
+    banned = False
+    reached = False
+    for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
+        created = datetime.datetime.fromtimestamp(log.created_utc)
+        action = log.action
+        log_offender = log.target_author
+        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower():
+            continue
+        if action == 'banuser':
+            banned = True
+        else:
+            target_link = log.target_permalink
+            offenses_idx.add('https://reddit.com{}'.format(target_link))
+
+        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
+            print('REACHED with limit={}'.format(limit))
+            reached = True
+            break
+    return reached, offenses_idx, banned
+
+
+def get_offender_profile_string(reddit, offender, num_hours=24):
+    offenses, banned = get_offender_profile(reddit, offender, num_hours=num_hours)
+    banned_string = ''
+    if banned:
+        banned_string = '(User is currently banned)'
+    p_string = 'Contributions from {} removed in the past {} hours {}\n'.format(offender, num_hours, banned_string)
+    counter = 0
+    for offense in offenses:
+        counter += 1
+        p_string += '\t{}\n'.format(offense)
+    return p_string
 
 
 def get_top_offenders(reddit, num_hours=24):
-    current_limit = 100
+    current_limit = 100*num_hours
     reached, offenders_idx, banned_idx = get_top_offenders_limit(reddit, num_hours, current_limit)
     while reached is False and current_limit < 7000:
         current_limit = current_limit*2
@@ -38,7 +81,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
 
 
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
-            print('REACHED 24H')
+            print('REACHED with limit={}'.format(limit))
             reached = True
             break
     return reached, offenders_idx, banned_idx
@@ -62,4 +105,4 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
 
 if __name__ == "__main__":
     reddit = authorize()
-    print(get_offenders_string(reddit, num_hours=5))
+    print(get_offender_profile_string(reddit, 'BalkanEagles', num_hours=2))

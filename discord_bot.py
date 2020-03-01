@@ -3,7 +3,7 @@ import discord
 from reddit_bot import authorize, get_modqueue_length
 from clear_autmod_from_modqueue import clear_queue
 from mod_leaderboard import get_leaderboard_string
-from top_offenders import get_offenders_string
+from top_offenders import get_offenders_string, get_offender_profile_string
 import os
 
 bot = commands.Bot(command_prefix='q!')
@@ -18,12 +18,14 @@ async def clear_bad_reports(ctx):
     num_reports_cleared = clear_queue(reddit)
     await ctx.send('Finished! I cleared {} reports.'.format(num_reports_cleared))
 
+
 @bot.command(help='shows modqueue length')
 @commands.has_role('/r/Coronavirus')
 async def length(ctx):
     print('q_length command')
     length = await get_modqueue_length(reddit)
     await ctx.send('The r/coronavirus modqueue currently has {} items pending.\nhttps://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(length))
+
 
 @bot.command(help='shows mod action leaderboard from past <hours> hours', usage='<hours>', brief='shows mod action leaderboard')
 @commands.has_role('/r/Coronavirus')
@@ -51,6 +53,22 @@ async def offenders(ctx, num_hours=2, top_k=5):
     o_string = get_offenders_string(reddit, num_hours=num_hours, top_k=top_k)
     print(o_string)
     await ctx.send(o_string)
+
+
+@bot.command(help='shows removed submissions from <user> from past <hours> hours', usage='<user> <hours>', brief='shows recent removals for user')
+@commands.has_role('/r/Coronavirus')
+async def recent(ctx, offender='', num_hours=2):
+    if num_hours > 24:
+        num_hours = 24
+    print('recent command with offender={} num_hours={}'.format(offender, num_hours))
+    if offender == '':
+        await ctx.send('Please specify a user.')
+    else:
+        await ctx.send('Fetching data, please wait.')
+        p_string = get_offender_profile_string(reddit, offender, num_hours=num_hours)
+        print(p_string)
+        await ctx.send(p_string)
+
 
 @bot.event
 async def on_ready():
