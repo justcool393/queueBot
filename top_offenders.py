@@ -34,7 +34,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             target_link = log.target_permalink
             offenses_idx.add('https://reddit.com{}'.format(target_link))
 
-    return reached, offenses_idx, banned
+    return reached, offenses_idx, any(reddit.subreddit('coronavirus').banned(redditor=offender))
 
 
 def get_offender_profile_string(reddit, offender, num_hours=24):
@@ -98,8 +98,8 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
             break
         profile = 'https://reddit.com/u/{}'.format(offender)
         ban_string = ''
-        if offender in banned_idx:
-            ban_string = '\tBanned: {}\n'.format(banned_idx[offender])
+        if any(reddit.subreddit('coronavirus').banned(redditor=offender)):
+            ban_string = '\tCurrently banned\n'
         lb_string += '#{} {} ({}) \n\tRemoved or spammed contributions: {}\n{}'.format(counter, offender, profile, len(v), ban_string)
     return lb_string
 
