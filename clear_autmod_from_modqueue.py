@@ -3,7 +3,7 @@ from reddit_bot import get_modqueue, authorize
 
 
 def clear_queue(reddit):
-    modset = set(reddit.subreddit('coronavirus').moderator())
+    modset = set([k.name for k in reddit.subreddit('coronavirus').moderator()])
     queue = get_modqueue(reddit)
     approve_count = 0
     for qi in queue:
