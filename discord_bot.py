@@ -3,6 +3,7 @@ import discord
 from reddit_bot import authorize, get_modqueue_length
 from clear_autmod_from_modqueue import clear_queue
 from mod_leaderboard import get_leaderboard_string
+from top_offenders import get_offenders_string
 import os
 
 bot = commands.Bot(command_prefix='q!')
@@ -33,9 +34,23 @@ async def leaderboard(ctx, num_hours=2, top_k=5):
         num_hours = 24
     print('leaderboard command with num_hours={} top_k={}'.format(num_hours, top_k))
     await ctx.send('Fetching data, please wait.')
-    lb_string = get_leaderboard_string(reddit, num_hours=num_hours)
+    lb_string = get_leaderboard_string(reddit, num_hours=num_hours, top_k=top_k)
     print(lb_string)
     await ctx.send(lb_string)
+
+
+@bot.command(help='shows leaderboard of removed user submissions from past <hours> hours', usage='<hours>', brief='shows repeat offender leaderboard')
+@commands.has_role('/r/Coronavirus')
+async def offenders(ctx, num_hours=2, top_k=5):
+    if top_k > 5:
+        top_k = 5
+    if num_hours > 24:
+        num_hours = 24
+    print('offenders command with num_hours={} top_k={}'.format(num_hours, top_k))
+    await ctx.send('Fetching data, please wait.')
+    o_string = get_offenders_string(reddit, num_hours=num_hours, top_k=top_k)
+    print(o_string)
+    await ctx.send(o_string)
 
 @bot.event
 async def on_ready():

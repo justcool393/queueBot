@@ -29,7 +29,7 @@ def get_leaderboard_limit(reddit, num_hours=24, limit=100):
     lock_idx = {}
     modset = set([])
     reached = False
-    for log in reddit.subreddit('coronavirus').mod.log(limit=5000):
+    for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         mod = log.mod
         created = datetime.datetime.fromtimestamp(log.created_utc)
         action = log.action
