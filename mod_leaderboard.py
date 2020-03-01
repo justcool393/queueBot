@@ -33,14 +33,15 @@ def get_leaderboard_limit(reddit, num_hours=24, limit=100):
     for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         mod = log.mod
         created = datetime.datetime.fromtimestamp(log.created_utc)
-        action = log.action
-        if action not in KEEP_ACTIONS or mod == 'AutoModerator':
-            continue
-        modset.add(mod)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
             print('REACHED 24H')
             reached = True
             break
+        action = log.action
+        if action not in KEEP_ACTIONS or mod == 'AutoModerator':
+            continue
+        modset.add(mod)
+
         target = log.target_permalink
         if mod not in mods_actions_idx:
             mods_actions_idx[mod] = 0

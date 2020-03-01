@@ -22,6 +22,10 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
     reached = False
     for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
+        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
+            print('REACHED with limit={}'.format(limit))
+            reached = True
+            break
         action = log.action
         log_offender = log.target_author
         if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower():
@@ -32,10 +36,6 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             target_link = log.target_permalink
             offenses_idx.add('https://reddit.com{}'.format(target_link))
 
-        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
-            print('REACHED with limit={}'.format(limit))
-            reached = True
-            break
     return reached, offenses_idx, banned
 
 
@@ -67,6 +67,10 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
     reached = False
     for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
+        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
+            print('REACHED with limit={}'.format(limit))
+            reached = True
+            break
         action = log.action
         offender = log.target_author
         if action not in KEEP_ACTIONS:
@@ -80,11 +84,6 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
                 offenders_idx[offender] = set([])
             offenders_idx[offender].add(target_link)
 
-
-        if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
-            print('REACHED with limit={}'.format(limit))
-            reached = True
-            break
     return reached, offenders_idx, banned_idx
 
 
