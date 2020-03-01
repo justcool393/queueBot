@@ -17,15 +17,11 @@ def get_modqueue(reddit):
 
 
 async def get_modqueue_length(reddit=None):
-    print('mc time')
     if reddit is None:
         print('authing')
         reddit = authorize()
-
     modqueue = get_modqueue(reddit)
-    print('got it')
     length = sum(1 for _ in modqueue)
-    print('length is {}'.format(length))
     return length
 
 if __name__ == "__main__":
