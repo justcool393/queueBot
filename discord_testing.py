@@ -8,26 +8,25 @@ import os
 bot = commands.Bot(command_prefix='q!')
 reddit = authorize()
 
-@bot.command()
-async def test(ctx):
-    print('test command')
-    await ctx.send('pass')
 
-@bot.command()
+@bot.command(help='clears modqueue reports against autmod and mods')
+@commands.has_role('/r/Coronavirus')
 async def clear_bad_reports(ctx):
     print('clean queue command')
     await ctx.send('Clearing reports against moderators and automod from queue.')
     num_reports_cleared = clear_queue(reddit)
     await ctx.send('Finished! I cleared {} reports.'.format(num_reports_cleared))
 
-@bot.command()
+@bot.command(help='shows modqueue length')
+@commands.has_role('/r/Coronavirus')
 async def length(ctx):
     print('q_length command')
     length = await get_modqueue_length(reddit)
     await ctx.send('The r/coronavirus modqueue currently has {} items pending.\nhttps://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(length))
 
-@bot.command()
-async def leaderboard(ctx, num_hours=24, top_k=5):
+@bot.command(help='shows mod action leaderboard from past <hours> hours', usage='<hours>', brief='shows mod action leaderboard')
+@commands.has_role('/r/Coronavirus')
+async def leaderboard(ctx, num_hours=2, top_k=5):
     if top_k > 5:
         top_k = 5
     if num_hours > 24:
