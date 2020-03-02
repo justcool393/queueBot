@@ -18,6 +18,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
     offenses_idx = set([])
     banned = False
     reached = False
+    moderators = set([k.name for k in reddit.subreddit('coronavirus').moderator()])
     for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
@@ -26,7 +27,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             break
         action = log.action
         log_offender = log.target_author
-        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower() or log.mod.name == 'AutoModerator':
+        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower() or log.mod.name in moderators:
             continue
         if action == 'banuser':
             banned = True
@@ -66,6 +67,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
     offenders_idx = {}
     banned_idx = {}
     reached = False
+    moderators = set([k.name for k in reddit.subreddit('coronavirus').moderator()])
     for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
@@ -75,7 +77,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
         action = log.action
         offender = log.target_author
         if action not in KEEP_ACTIONS or log.mod.name == 'AutoModerator' or offender == '[deleted]' \
-                or offender == 'AutoModerator':
+                or offender in moderators:
             continue
         if action == 'banuser':
             if offender not in banned_idx:
