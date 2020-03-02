@@ -1,6 +1,6 @@
 from reddit_bot import authorize
 import datetime
-from config import ACTIONS_PER_HOUR, LOG_MAX
+from config import ACTIONS_PER_HOUR, LOG_MAX, SUBREDDIT
 
 
 
@@ -30,11 +30,11 @@ def get_leaderboard_limit(reddit, num_hours=24, limit=100):
     lock_idx = {}
     modset = set([])
     reached = False
-    for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
+    for log in reddit.subreddit(SUBREDDIT).mod.log(limit=limit):
         mod = log.mod
         created = datetime.datetime.fromtimestamp(log.created_utc)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
-            print('REACHED 24H')
+            print('REACHED with limit={}'.format(limit))
             reached = True
             break
         action = log.action
@@ -97,7 +97,7 @@ def print_leaderboard(mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_i
 
 def get_leaderboard_string(reddit, num_hours=24, top_k=5):
     mods_actions_idx, approve_idx, remove_idx, lock_idx, ban_idx, flair_idx = get_leaderboard(reddit, num_hours=num_hours)
-    lb_string = 'Mod action leaderboard from past {} hours\n'.format(num_hours)
+    lb_string = 'Mod action leaderboard for {} from past {} hours\n'.format(SUBREDDIT, num_hours)
     counter = 0
     for mod, v in reversed(sorted(mods_actions_idx.items(), key=lambda item: item[1])):
         counter += 1

@@ -1,6 +1,6 @@
 from reddit_bot import authorize
 import datetime
-from config import ACTIONS_PER_HOUR, LOG_MAX
+from config import ACTIONS_PER_HOUR, LOG_MAX, SUBREDDIT
 
 
 KEEP_ACTIONS = {'removecomment', 'spamcomment', 'banuser', 'removelink', 'spamlink'}
@@ -18,8 +18,8 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
     offenses_idx = set([])
     banned = False
     reached = False
-    moderators = set([k.name for k in reddit.subreddit('coronavirus').moderator()])
-    for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
+    moderators = set([k.name for k in reddit.subreddit(SUBREDDIT).moderator()])
+    for log in reddit.subreddit(SUBREDDIT).mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
             print('REACHED with limit={}'.format(limit))
@@ -35,7 +35,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             target_link = log.target_permalink
             offenses_idx.add('https://reddit.com{}'.format(target_link))
 
-    return reached, offenses_idx, any(reddit.subreddit('coronavirus').banned(redditor=offender))
+    return reached, offenses_idx, any(reddit.subreddit(SUBREDDIT).banned(redditor=offender))
 
 
 def get_offender_profile_string(reddit, offender, num_hours=24):
@@ -43,7 +43,7 @@ def get_offender_profile_string(reddit, offender, num_hours=24):
     banned_string = ''
     if banned:
         banned_string = '(User is currently banned)'
-    p_string = 'Contributions from {} removed in the past {} hours {}\n'.format(offender, num_hours, banned_string)
+    p_string = 'Contributions from {} removed in the past {} hours {} on {}\n'.format(offender, num_hours, banned_string, SUBREDDIT)
     counter = 0
     for offense in offenses:
         counter += 1
@@ -67,8 +67,8 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
     offenders_idx = {}
     banned_idx = {}
     reached = False
-    moderators = set([k.name for k in reddit.subreddit('coronavirus').moderator()])
-    for log in reddit.subreddit('coronavirus').mod.log(limit=limit):
+    moderators = set([k.name for k in reddit.subreddit(SUBREDDIT).moderator()])
+    for log in reddit.subreddit(SUBREDDIT).mod.log(limit=limit):
         created = datetime.datetime.fromtimestamp(log.created_utc)
         if datetime.datetime.now() - datetime.timedelta(hours=num_hours) > created:
             print('REACHED with limit={}'.format(limit))
@@ -93,7 +93,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
 
 def get_offenders_string(reddit, num_hours=24, top_k=10):
     offenders_idx, banned_idx = get_top_offenders(reddit, num_hours=num_hours)
-    lb_string = 'Top offenders in modlog from past {} hours\n'.format(num_hours)
+    lb_string = 'Top offenders in modlog from past {} hours on {}\n'.format(num_hours, SUBREDDIT)
     counter = 0
     for offender, v in reversed(sorted(offenders_idx.items(), key=lambda item: len(item[1]))):
         counter += 1
@@ -101,7 +101,7 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
             break
         profile = 'https://reddit.com/u/{}'.format(offender)
         ban_string = ''
-        if any(reddit.subreddit('coronavirus').banned(redditor=offender)):
+        if any(reddit.subreddit(SUBREDDIT).banned(redditor=offender)):
             ban_string = '\tCurrently banned\n'
         lb_string += '#{} {} ({}) \n\tRemoved or spammed contributions: {}\n{}'.format(counter, offender, profile, len(v), ban_string)
     return lb_string
