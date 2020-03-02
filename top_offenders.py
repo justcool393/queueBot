@@ -27,7 +27,7 @@ def get_offender_profile_limit(reddit, offender, num_hours, limit):
             break
         action = log.action
         log_offender = log.target_author
-        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower() or log.mod.name in moderators:
+        if action not in KEEP_ACTIONS or log_offender.lower() != offender.lower() or log.target_author in moderators:
             continue
         if action == 'banuser':
             banned = True
@@ -42,8 +42,8 @@ def get_offender_profile_string(reddit, offender, num_hours=24):
     offenses, banned = get_offender_profile(reddit, offender, num_hours=num_hours)
     banned_string = ''
     if banned:
-        banned_string = '(User is currently banned)'
-    p_string = 'Contributions from {} removed in the past {} hours {} on {}\n'.format(offender, num_hours, banned_string, SUBREDDIT)
+        banned_string = ' (User is currently banned)'
+    p_string = 'Contributions from {} removed in the past {} hours{} on r/{}\n'.format(offender, num_hours, banned_string, SUBREDDIT)
     counter = 0
     for offense in offenses:
         counter += 1
@@ -93,7 +93,7 @@ def get_top_offenders_limit(reddit, num_hours=24, limit=100):
 
 def get_offenders_string(reddit, num_hours=24, top_k=10):
     offenders_idx, banned_idx = get_top_offenders(reddit, num_hours=num_hours)
-    lb_string = 'Top offenders in modlog from past {} hours on {}\n'.format(num_hours, SUBREDDIT)
+    lb_string = 'Top offenders in modlog from past {} hours on r/{}\n'.format(num_hours, SUBREDDIT)
     counter = 0
     for offender, v in reversed(sorted(offenders_idx.items(), key=lambda item: len(item[1]))):
         counter += 1
@@ -109,4 +109,4 @@ def get_offenders_string(reddit, num_hours=24, top_k=10):
 
 if __name__ == "__main__":
     reddit = authorize()
-    print(get_offenders_string(reddit, num_hours=12))
+    print(get_offender_profile_string(reddit, 'pappy', num_hours=1))
