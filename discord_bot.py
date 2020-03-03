@@ -30,8 +30,6 @@ async def length(ctx):
 @bot.command(help='shows mod action leaderboard from past <hours> hours', usage='<hours>', brief='shows mod action leaderboard')
 @commands.has_role('/r/Coronavirus')
 async def leaderboard(ctx, num_hours=1, top_k=5):
-    if top_k > 5:
-        top_k = 5
     if num_hours > 24:
         num_hours = 24
     print('leaderboard command with num_hours={} top_k={}'.format(num_hours, top_k))
