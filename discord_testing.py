@@ -100,7 +100,7 @@ class QueuebotCog(commands.Cog):
                     print('length: {}'.format(modqueue_length))
                     if modqueue_length > 50:
                         print('modqueue length is {}, sending message'.format(modqueue_length))
-                        #await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
+                        await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
 
 
     @tasks.loop(minutes=2)
@@ -124,7 +124,10 @@ class QueuebotCog(commands.Cog):
             print('political_toxicity_score for submission {} is {}'.format(sub_id, political_toxicity_score))
             if political_toxicity_score > TOXICITY_THRESHOLD and self.submission_analysis[sub_id]['reported_to_mods'] is False:
                 toxic_submission = self.reddit.submission(id=sub_id)
+                if toxic_submission.locked or toxic_submission.removed:
+                    continue
                 print('submission at {} is potentially a political wasteland'.format(toxic_submission.shortlink))
+                self.submission_analysis[sub_id]['reported_to_mods'] = True
                 await self.bot.wait_until_ready()
                 for guild in self.bot.guilds:
                     for channel in guild.channels:
