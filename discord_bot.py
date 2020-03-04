@@ -16,12 +16,12 @@ class QueuebotCog(commands.Cog):
 
         # start timed events
         self.queue_length.start()
-        self.analyze_queue.start()
+        #self.analyze_queue.start()
 
 
     def cog_unload(self):
         self.queue_length.cancel()
-        self.analyze_queue.cancel()
+        #self.analyze_queue.cancel()
 
 
     @commands.command(help='clears modqueue reports against autmod and mods')
