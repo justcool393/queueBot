@@ -103,7 +103,7 @@ class QueuebotCog(commands.Cog):
                         await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
 
 
-    @tasks.loop(seconds=60)
+    @tasks.loop(minutes=5)
     async def analyze_queue(self):
         print('analyzing queue...')
         num_comments_idx, reports_idx = get_comment_report_data(self.reddit)

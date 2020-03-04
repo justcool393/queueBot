@@ -7,15 +7,17 @@ def get_comment_report_data(reddit):
     reports_idx = {}
     for qi in queue:
         if type(qi) == Comment:
-            sub = qi.submission
-            sub_id = sub.id
-            num_comments = sub.num_comments
-            num_comments_idx[sub_id] = num_comments
             for ur in qi.user_reports:
                 if ur[0] is not None and ur[0].lower().find('political') != -1:
+                    sub = qi.submission
+                    sub_id = sub.id
+                    if sub_id not in num_comments_idx:
+                        num_comments = sub.num_comments
+                        num_comments_idx[sub_id] = num_comments
                     if sub_id not in reports_idx:
                         reports_idx[sub_id] = set([])
                     reports_idx[sub_id].add(qi.id)
+                    break
     return num_comments_idx, reports_idx
 
 
