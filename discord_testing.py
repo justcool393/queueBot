@@ -92,8 +92,8 @@ class QueuebotCog(commands.Cog):
 
     @tasks.loop(minutes=30.0)
     async def queue_length(self):
-        await bot.wait_until_ready()
-        for guild in bot.guilds:
+        await self.bot.wait_until_ready()
+        for guild in self.bot.guilds:
             for channel in guild.channels:
                 if channel.name == 'rcoronavirus':
                     modqueue_length = await get_modqueue_length(self.reddit)
@@ -113,6 +113,7 @@ class QueuebotCog(commands.Cog):
                 self.submission_analysis[sub_id] = {}
                 self.submission_analysis[sub_id]['num_comments'] = 0
                 self.submission_analysis[sub_id]['reported_comments'] = set([])
+                self.submission_analysis[sub_id]['reported_to_mods'] = False
             self.submission_analysis[sub_id]['num_comments'] = max(comment_count,
                                                                    self.submission_analysis[sub_id]['num_comments'])
         for sub_id, reports in reports_idx.items():
@@ -121,9 +122,16 @@ class QueuebotCog(commands.Cog):
         for sub_id, submission_meta in self.submission_analysis.items():
             political_toxicity_score = float(len(submission_meta['reported_comments'])) / submission_meta['num_comments']
             print('political_toxicity_score for submission {} is {}'.format(sub_id, political_toxicity_score))
-            if political_toxicity_score > TOXICITY_THRESHOLD:
+            if political_toxicity_score > TOXICITY_THRESHOLD and self.submission_analysis[sub_id]['reported_to_mods'] is False:
                 toxic_submission = self.reddit.submission(id=sub_id)
-                print(toxic_submission)
+                print('submission at {} is potentially a political wasteland'.format(toxic_submission.shortlink))
+                await self.bot.wait_until_ready()
+                for guild in self.bot.guilds:
+                    for channel in guild.channels:
+                        if channel.name == 'rcoronavirus':
+                            await channel.send(
+                                'The submission at {} is potentially a political wasteland (score={}), '
+                                'consider locking comments'.format(toxic_submission.shortlink, political_toxicity_score))
 
 
 bot = commands.Bot(command_prefix='q!')

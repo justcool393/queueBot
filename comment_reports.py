@@ -10,8 +10,12 @@ def get_comment_report_data(reddit):
             for ur in qi.user_reports:
                 if ur[0] is not None and ur[0].lower().find('political') != -1:
                     sub = qi.submission
+                    if sub.locked:
+                        continue
                     sub_id = sub.id
+                    print('got submission {}'.format(sub_id))
                     if sub_id not in num_comments_idx:
+                        print('fetching comment number for {}'.format(sub_id))
                         num_comments = sub.num_comments
                         num_comments_idx[sub_id] = num_comments
                     if sub_id not in reports_idx:
