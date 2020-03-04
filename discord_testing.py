@@ -100,10 +100,10 @@ class QueuebotCog(commands.Cog):
                     print('length: {}'.format(modqueue_length))
                     if modqueue_length > 50:
                         print('modqueue length is {}, sending message'.format(modqueue_length))
-                        await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
+                        #await channel.send('Oh no, there are {} items in the modqueue! https://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(modqueue_length))
 
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=2)
     async def analyze_queue(self):
         print('analyzing queue...')
         num_comments_idx, reports_idx = get_comment_report_data(self.reddit)
