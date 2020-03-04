@@ -124,7 +124,7 @@ class QueuebotCog(commands.Cog):
             print('political_toxicity_score for submission {} is {}'.format(sub_id, political_toxicity_score))
             if political_toxicity_score > TOXICITY_THRESHOLD and \
                     self.submission_analysis[sub_id]['reported_to_mods'] is False and \
-                    self.submission_analysis[sub_id]['reported_comments'] > 3:
+                    len(self.submission_analysis[sub_id]['reported_comments']) > 3:
                 toxic_submission = self.reddit.submission(id=sub_id)
                 self.submission_analysis[sub_id]['reported_to_mods'] = True
                 if toxic_submission.locked or toxic_submission.removed:
