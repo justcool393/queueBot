@@ -38,7 +38,7 @@ class QueuebotCog(commands.Cog):
     async def length(self, ctx):
         print('q_length command')
         length = await get_modqueue_length(self.reddit)
-        await ctx.send('The r/coronavirus modqueue currently has {} items pending.\nhttps://www.reddit.com/r/mod/about/modqueue?subreddit=Coronavirus'.format(length))
+        await ctx.send('The r/Coronavirus modqueue currently has {} items pending.\nhttps://www.reddit.com/r/Coronavirus/about/modqueue'.format(length))
 
 
     @commands.command(help='shows mod action leaderboard from past <hours> hours', usage='<hours>', brief='shows mod action leaderboard')
