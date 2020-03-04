@@ -15,6 +15,19 @@ def clear_queue(reddit):
     return approve_count
 
 
+def approve_reposts(reddit):
+    queue = get_modqueue(reddit)
+    remove_count = 0
+    for qi in queue:
+        repost_text = 'Avoid reposting information'
+        for ur in qi.user_reports:
+            if ur[0] is not None and ur[0].find(repost_text) != -1:
+                qi.mod.approve()
+                remove_count += 1
+    print('finished clearing queue')
+    return remove_count
+
+
 if __name__ == "__main__":
     reddit = authorize()
-    clear_queue(reddit)
+    approve_reposts(reddit)
